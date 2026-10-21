@@ -1721,7 +1721,7 @@
      "free": 1
     },
     "n": "極速外送",
-    "flavor": "工單處理速度加快，每次任務額外帶入隨機道具。"
+    "flavor": "工單處理速度加快：下一次行動不消耗回合（不會推進時間，神力照常回復）。"
    },
    "talents": [
     {
@@ -7277,6 +7277,7 @@
           state.turnBefore = null;
         }
         state.prefetch = null;
+        try { appendResult(['🆓 免費行動：這次沒有消耗回合，進度仍停在「第 ' + dayNo() + ' 天・第 ' + ((state.turn % TURNS_PER_DAY) + 1) + '/' + TURNS_PER_DAY + ' 回合」（神力 +' + BAL.regen + '）']); } catch (e) { }
         renderTicket(normalizeTicket(offlineTicketFor({ kind: 'normal' }), { kind: 'normal' }));
         return;
       }
@@ -8266,7 +8267,7 @@
     function tpStat() {
       const e = $('tp-stat'); if (!e || !state.stats) return;
       const st = state.stats;
-      e.innerHTML = '<span>⚡ ' + st.mana + '</span><span>🔥 信仰 ' + st.faith + '</span><span>⚖️ 混沌 ' + st.chaos + '</span><span>⛓️ 因果債 ' + state.karmaDebt + '</span>';
+      e.innerHTML = '<span>⚡ ' + st.mana + '</span><span>🔥 信仰 ' + st.faith + '</span><span>⚖️ 混沌 ' + st.chaos + '</span><span>⛓️ 因果債 ' + state.karmaDebt + '</span>' + (TL().freeAct > 0 ? '<span style="color:#34d399;">🆓 免費行動×' + TL().freeAct + '</span>' : '');
     }
     function tpMove(open) {
       ['role-tags', 'skill-bar', 'talent-bar'].forEach(function (id) {
@@ -8292,7 +8293,7 @@
       const god = state.camp !== 'DEMON';
       const b = $('tp-open-t'); if (b) b.innerText = god ? '🙏 接取願望' : '😈 接取詛咒';
       const sub = $('tp-sub');
-      if (sub) sub.innerText = t ? ((KIND_BADGE[t.kind] != null && KIND_BADGE[t.kind] ? KIND_BADGE[t.kind].trim() + '・' : '') + (god ? '許願者：' : '委託人：') + t.sender + '') : '終端派單中…';
+      if (sub) sub.innerText = t ? ((TL().freeAct > 0 ? '🆓 下一次行動不耗回合・' : '') + (KIND_BADGE[t.kind] != null && KIND_BADGE[t.kind] ? KIND_BADGE[t.kind].trim() + '・' : '') + (god ? '許願者：' : '委託人：') + t.sender + '') : '終端派單中…';
     }
     // 這張工單屬於哪條劇情
     function tpWhich(t) {
@@ -8360,6 +8361,7 @@
           esc(s.icon + s.name) + (left > 0 ? '（冷卻' + left + '）' : '（-' + s.cost + '⚡）') + '</button>' +
           '<button type="button" onclick="window.skillInfo(' + i + ')" aria-label="技能說明" style="flex:0 0 34px; font-size:14px; font-weight:900; border-radius:10px; border:1px solid #52525b; background:rgba(39,39,42,0.9); color:#e4e4e7; cursor:pointer;">ⓘ</button>';
       }).join('');
+      try { tpUpdate(); tpStat(); } catch (e) { }
     }
 
     function skillInfo(i) {
@@ -8661,7 +8663,7 @@
       }
       if (fx.item) { let n = 0; for (let i = 0; i < fx.item; i++) { if (addItem(randCampItem())) n++; } if (n) add('🎁獲得 ' + n + ' 個供品'); }
       if (fx.shield && state.amulets.length < 3) { state.amulets.push({ name: '天賦護體', effects: [{ kind: 'shield', power: 1 }] }); add('🧿獲得護體法寶'); }
-      if (fx.free) { tl.freeAct++; add('🆓多一次免費行動'); }
+      if (fx.free) { tl.freeAct++; add('🆓免費行動待命：你的下一次行動不消耗回合'); }
       if (fx.freeze) { tl.freezeUntil = Math.max(tl.freezeUntil, state.turn + fx.freeze); add('🧊' + nm.opp + ' ' + fx.freeze + ' 回合內不會上升'); }
       if (fx.calm) {
         const hot = state.cults.filter(function (c) { return c.unrest > 0; });
