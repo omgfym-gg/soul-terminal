@@ -781,7 +781,13 @@
       '香火|血契': { n: '黑香', e: ['curse', 'regen'] }, '眼淚|愛心': { n: '戀人淚', e: ['bless', 'purify'] },
       '乖乖|紅單': { n: '免罰金牌', e: ['shield', 'hoard'] }, '肝|咆哮': { n: '社畜魂', e: ['vigor', 'ward'] },
       '香火|乖乖': { n: '平安符', e: ['regen', 'shield'] }, '愛心|血契': { n: '孽緣', e: ['lucky', 'curse'] },
-      '眼淚|肝': { n: '苦命湯', e: ['purify', 'vigor'] }, '紅單|香火': { n: '燒金紙', e: ['hoard', 'regen'] }
+      '眼淚|肝': { n: '苦命湯', e: ['purify', 'vigor'] }, '紅單|香火': { n: '燒金紙', e: ['hoard', 'regen'] },
+      '香火|肝': { n: '續命香', e: ['vigor', 'regen'] }, '香火|咆哮': { n: '驅邪爆竹', e: ['ward', 'regen'] },
+      '眼淚|血契': { n: '悔過書', e: ['purify', 'curse'] }, '眼淚|紅單': { n: '申訴狀', e: ['purify', 'shield'] },
+      '眼淚|咆哮': { n: '哭喊聲', e: ['purify', 'ward'] }, '乖乖|血契': { n: '聽話項圈', e: ['shield', 'curse'] },
+      '乖乖|肝': { n: '保肝丸', e: ['regen', 'hoard'] }, '乖乖|咆哮': { n: '靜音貼紙', e: ['shield', 'ward'] },
+      '愛心|肝': { n: '熱血便當', e: ['vigor', 'lucky'] }, '愛心|紅單': { n: '情書罰單', e: ['lucky', 'hoard'] },
+      '愛心|咆哮': { n: '告白擴音器', e: ['lucky', 'ward'] }, '血契|紅單': { n: '追討令', e: ['curse', 'hoard'] }
     };
     function recipeOf(ka, kb) { return RECIPES[ka + '|' + kb] || RECIPES[kb + '|' + ka] || null; }
     // 丹藥：立即吃掉，不占法寶欄
@@ -9296,6 +9302,11 @@
       if (pen) { fx.win = Math.floor(fx.win / 2); fx.karma += 4; }
       return { it: it, fx: fx, pen: pen };
     }
+    function pillName(x, y) {
+      const i = offeringInfo(x.name), j = offeringInfo(y.name);
+      const rc = (i.key && j.key && i.key !== j.key) ? recipeOf(i.key, j.key) : null;
+      return rc ? rc.n + '丹' : (i.key && i.key === j.key) ? i.key + '純煉丹' : '雜燴丹';
+    }
     function pillText(fx) {
       const wk = winKey(), parts = [];
       if (fx.mana) parts.push('⚡ 神力 +' + fx.mana);
@@ -9308,7 +9319,7 @@
       const a = state.alchSelection[0], b = state.alchSelection[1];
       if (a == null || b == null || a === b || !state.inventory[a] || !state.inventory[b]) { uiAlert('請放入兩個不同的供品才能煉丹！'); return; }
       const r = pillCalc(a, b);
-      uiConfirm('要把「' + r.it[0].name + '」＋「' + r.it[1].name + '」煉成丹藥並立刻服下嗎？\n\n服下後：\n' + pillText(r.fx) + (r.pen ? '\n\n☠️ 含變質供品：主目標加成減半，因果債額外 +4。' : '') + '\n\n兩個供品會被消耗，不占法寶欄，不消耗回合。', function () { doPill(); });
+      uiConfirm('要把「' + r.it[0].name + '」＋「' + r.it[1].name + '」煉成「' + pillName(r.it[0], r.it[1]) + '」並立刻服下嗎？\n\n服下後：\n' + pillText(r.fx) + (r.pen ? '\n\n☠️ 含變質供品：主目標加成減半，因果債額外 +4。' : '') + '\n\n兩個供品會被消耗，不占法寶欄，不消耗回合。', function () { doPill(); });
     }
 
     // 丹藥：兩個供品（變質的也行）直接吃掉，立刻生效，不占法寶欄
@@ -9325,7 +9336,7 @@
       if (fx.mana) parts.push('⚡+' + fx.mana);
       if (fx.win) parts.push((wk === 'faith' ? '🔥信仰+' : '⚖️混沌+') + fx.win);
       if (fx.karma) parts.push('因果債' + (fx.karma > 0 ? '+' : '') + fx.karma);
-      $('alch-result-name').innerText = '丹藥（' + it[0].name + '＋' + it[1].name + '）服下！' + parts.join('　') + (pen ? '（含變質供品，藥效減半）' : '');
+      $('alch-result-name').innerText = '【' + pillName(it[0], it[1]) + '】服下！（' + it[0].name + '＋' + it[1].name + '）' + parts.join('　') + (pen ? '（含變質供品，藥效減半）' : '');
       $('alch-result-box').style.display = 'block';
       state.alchSelection = [null, null];
       renderAlchemySlots(); updateHeaderUI();
