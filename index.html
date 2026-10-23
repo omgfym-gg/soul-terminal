@@ -7388,47 +7388,57 @@
     // 每回合結算：自然回神力、法寶、主目標自然流失、邪教收入與動盪、供品老化、未爆發的因果利息
     function applyTurnPassive() {
       const ev = evJustDone() || {};
-      state.stats.mana = clamp(state.stats.mana + BAL.regen + (hasBoon('spring') ? 2 : 0) + (ev.regen || 0), 0, 100);
+      const lines = [];
+      // 每一項結算分開記錄「來源＋增減」，讓玩家看得懂數字為什麼動
+      function step(label, fn) { const b0 = snap(); fn(); const d = diffText(b0); if (d) lines.push(label + '：' + d); }
+      step('自然回復神力', function () { state.stats.mana = clamp(state.stats.mana + BAL.regen + (hasBoon('spring') ? 2 : 0) + (ev.regen || 0), 0, 100); });
       state.amulets.forEach(function (a) {
         a.effects.forEach(function (e) {
-          const p = e.power || 1;
-          if (e.kind === 'regen') state.stats.mana = clamp(state.stats.mana + 3 * p, 0, 100);
-          if (e.kind === 'vigor') { state.stats.mana = clamp(state.stats.mana + 4 * p, 0, 100); state.karmaDebt = clamp(state.karmaDebt + p, 0, 100); }
-          if (e.kind === 'purify') state.karmaDebt = clamp(state.karmaDebt - 3 * p, 0, 100);
-          if (e.kind === 'bless') state.stats.faith = clamp(state.stats.faith + 2 * p, 0, 100);
-          if (e.kind === 'curse') state.stats.chaos = clamp(state.stats.chaos + 2 * p, 0, 100);
+          const p = e.power || 1, kl = '法寶「' + (AMULET_KINDS[e.kind] ? AMULET_KINDS[e.kind].label : e.kind) + '」';
+          step(kl, function () {
+            if (e.kind === 'regen') state.stats.mana = clamp(state.stats.mana + 3 * p, 0, 100);
+            if (e.kind === 'vigor') { state.stats.mana = clamp(state.stats.mana + 4 * p, 0, 100); state.karmaDebt = clamp(state.karmaDebt + p, 0, 100); }
+            if (e.kind === 'purify') state.karmaDebt = clamp(state.karmaDebt - 3 * p, 0, 100);
+            if (e.kind === 'bless') state.stats.faith = clamp(state.stats.faith + 2 * p, 0, 100);
+            if (e.kind === 'curse') state.stats.chaos = clamp(state.stats.chaos + 2 * p, 0, 100);
+          });
         });
       });
       // 主目標自然流失（信仰會退燒、混沌會冷卻）
       const wk = winKey();
-      state.stats[wk] = clamp(state.stats[wk] - BAL.decay, 0, 100);
+      step(wk === 'faith' ? '信仰自然退燒（人心健忘，每回合都會掉）' : '混沌自然冷卻（每回合都會掉）', function () { state.stats[wk] = clamp(state.stats[wk] - BAL.decay, 0, 100); });
       // 邪教：收入加進主目標，同時帶來反向數值與動盪
       if (state.cults.length) {
-        let inc = 0;
-        state.cults.forEach(function (c) {
-          inc += cultIncome(c);
-          c.unrest = Math.min(100, c.unrest + (6 + c.lv * 2) * (ev.cultMult ? 2 : 1));
+        step('邪教收入與副作用（' + state.cults.length + ' 個）', function () {
+          let inc = 0;
+          state.cults.forEach(function (c) {
+            inc += cultIncome(c);
+            c.unrest = Math.min(100, c.unrest + (6 + c.lv * 2) * (ev.cultMult ? 2 : 1));
+          });
+          state.cultAcc += inc;
+          const whole = Math.floor(state.cultAcc);
+          state.cultAcc -= whole;
+          state.stats[wk] = clamp(state.stats[wk] + whole, 0, 100);
+          state.oppAcc += state.cults.length * BAL.cultOpp;
+          const ow = Math.floor(state.oppAcc);
+          state.oppAcc -= ow;
+          const ok = LIMITS[state.camp].stat;
+          if (!(TL().freezeUntil >= state.turn)) state.stats[ok] = clamp(state.stats[ok] + ow, 0, 100);
         });
-        state.cultAcc += inc;
-        const whole = Math.floor(state.cultAcc);
-        state.cultAcc -= whole;
-        state.stats[wk] = clamp(state.stats[wk] + whole, 0, 100);
-        state.oppAcc += state.cults.length * BAL.cultOpp;
-        const ow = Math.floor(state.oppAcc);
-        state.oppAcc -= ow;
-        const ok = LIMITS[state.camp].stat;
-        if (!(TL().freezeUntil >= state.turn)) state.stats[ok] = clamp(state.stats[ok] + ow, 0, 100);
       }
       if (ev.oppTick && !(ev.oppTick > 0 && TL().freezeUntil >= state.turn)) {
-        const ok2 = LIMITS[state.camp].stat;
-        state.stats[ok2] = clamp(state.stats[ok2] + ev.oppTick, 0, 100);
+        step('事件影響', function () {
+          const ok2 = LIMITS[state.camp].stat;
+          state.stats[ok2] = clamp(state.stats[ok2] + ev.oppTick, 0, 100);
+        });
       }
       state.inventory.forEach(function (it) {
         it.age = (it.age || 0) + 1;
         if (it.age >= rotLimit()) it.rotten = true;
       });
       const pending = state.karma.filter(k => !k.shown).length;
-      if (pending) state.karmaDebt = clamp(state.karmaDebt + pending * 2, 0, 100);
+      if (pending) step('未處理的因果利息（' + pending + ' 筆）', function () { state.karmaDebt = clamp(state.karmaDebt + pending * 2, 0, 100); });
+      state.passiveLines = lines;
     }
 
     function checkWinOrLose(context) {
@@ -7455,7 +7465,8 @@
       if (state.stats.faith !== pre.f) pd.push('🔥信仰 ' + sgn(state.stats.faith - pre.f));
       if (state.stats.chaos !== pre.c) pd.push('⚖️混沌 ' + sgn(state.stats.chaos - pre.c));
       if (state.karmaDebt !== pre.k) pd.push('⛓️因果債 ' + sgn(state.karmaDebt - pre.k));
-      if (pd.length) appendResult(['⏱ 回合結算（自然回復／流失）：' + pd.join('　')]);
+      if ((state.passiveLines || []).length) appendResult(['⏱ 回合結算（每回合自動發生）：\n' + state.passiveLines.map(function (l) { return '・' + l; }).join('\n')]);
+      else if (pd.length) appendResult(['⏱ 回合結算：' + pd.join('　')]);
       const tt = fireTalents('turn', {});
       if (tt.msgs.length) { state.turnExtra = (state.turnExtra ? state.turnExtra + ' ' : '') + tt.msgs.join(' '); appendResult(tt.msgs); }
       if (state.turnBefore) {
