@@ -7079,6 +7079,8 @@
     }
 
     function showResult(text, closePage) {
+      // 本回合若發動過技能，把技能效果一併寫進結果欄（行動後不會被蓋掉）
+      if (closePage && state.skillNotes && state.skillNotes.length) { text = '🎯 本回合發動技能：' + state.skillNotes.join('；') + '\n\n' + (text || ''); state.skillNotes = []; }
       try { if (closePage && state.tpOpen) tpClose(); else tpUpdate(); } catch (e) { }
       $('last-result-box').style.display = 'block';
       $('last-result-text').innerText = text || '';
@@ -8748,7 +8750,7 @@
       const r = applyTFx(fx, { hook: 'skill', t: state.currentTicket });
       state.skillReady[i] = state.turn + s.cd;
       announce('技能「' + s.name + '」', before);
-      { const dd = diffText(before); showResult('你發動了專屬技能「' + s.name + '」：' + (r.text || s.desc) + '。' + (dd ? '\n📊 ' + dd : '')); }
+      { const dd = diffText(before); (state.skillNotes = state.skillNotes || []).push(s.icon + '「' + s.name + '」' + (r.text || s.desc) + (dd ? '（' + dd + '）' : '')); showResult('你發動了專屬技能「' + s.name + '」：' + (r.text || s.desc) + '。' + (dd ? '\n📊 ' + dd : '')); }
       appendResult(fireTalents('act', {}).msgs);
       if (fx.swap) {
         renderTicket(normalizeTicket(offlineTicketFor({ kind: 'normal' }), { kind: 'normal' }));
