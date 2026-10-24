@@ -7469,6 +7469,11 @@
       else if (pd.length) appendResult(['⏱ 回合結算：' + pd.join('　')]);
       const tt = fireTalents('turn', {});
       if (tt.msgs.length) { state.turnExtra = (state.turnExtra ? state.turnExtra + ' ' : '') + tt.msgs.join(' '); appendResult(tt.msgs); }
+      // 最後總結：本回合（行動＋結算）總共變多少、現在各項是多少
+      try {
+        const tot = state.turnBefore ? diffText(state.turnBefore) : '';
+        appendResult(['📌 這張工單＋回合結算合計：' + (tot || '沒有變動') + '\n📍 現在：⚡神力 ' + state.stats.mana + '　🔥信仰 ' + state.stats.faith + '　⚖️混沌 ' + state.stats.chaos + '　⛓️因果債 ' + state.karmaDebt]);
+      } catch (e) { }
       if (state.turnBefore) {
         announce(state.turnLabel, state.turnBefore, state.turnExtra, afterAction);
         state.turnBefore = null;
