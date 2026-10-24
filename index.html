@@ -318,7 +318,7 @@
         <div style="font-size:12px; color:#d4d4d8; line-height:1.6; background:rgba(0,0,0,0.5); padding:12px; border-radius:12px; border:1px solid #27272a;">
           <p style="margin:0 0 8px 0;">📅 <b style="color:#fcd34d;">任期</b>：7 回合 = 1 天，7 天 = 49 回合。選擇、已讀不回、賜供品、自訂神蹟各用 1 回合；安撫、換神力、邪教管理不耗回合。</p>
           <p style="margin:0 0 8px 0;">📋 <b style="color:#7dd3fc;">每日考績</b>：每天結束對照「考績線」評 A/B/C/D（A、B 有獎勵），連兩次 D 被 free。考績後三選一永久增益，並預告明天的世界事件。</p>
-          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合自然流失 2 點。</p>
+          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合會自然流失（輕鬆 1／標準 2／困難 4 點，可在開局身分畫面選難度）。</p>
           <p style="margin:0 0 8px 0;">⚡ <b style="color:#38bdf8;">神力</b>：每個選項至少耗 3，每回合自然回 5。沒神力可按「🔥換神力」。</p>
           <p style="margin:0 0 8px 0;">🏷️ <b style="color:#34d399;">手段</b>：擅長手段神力 -2、收益 ×1.3；禁忌手段神力 +5、因果債 +10。按鈕上顯示的神力已含加成。</p>
           <p style="margin:0 0 8px 0;">🌟 <b style="color:#a78bfa;">技能與天賦</b>：專屬技能是按鈕或常駐被動；3 階自動天賦於第 1／3／5 天解鎖，條件達成自動發動，點標籤看詳情。</p>
@@ -443,6 +443,7 @@
     const TAG_ICON = { '慈悲': '🕊️', '暴力': '👊', '賄賂': '💰', '欺騙': '🎭', '奉獻': '🙏', '放任': '🛌', '煽動': '📣', '規矩': '📏' };
     // 平衡參數：gain＝主目標收益倍率；opp＝反向數值增幅倍率；regen＝每回合回神力；decay＝主目標每回合自然流失
     const BAL = { gain: 0.3, opp: 0.3, regen: 5, decay: 2, domainGain: 1.3, domainCut: 2, tabooKarma: 10, tabooMana: 5, cultInc: 0.15, cultOpp: 0.25, rot: 10, tal: { god: 0.65, demon: 0.4, other: 0.7, proc: 0.8 }, god: { faith: 40, chaos: 20 }, demon: { faith: 45, chaos: 15 } };
+    const BAL_BASE = { decay: BAL.decay, regen: BAL.regen, gain: BAL.gain };
     function initStats(camp) {
       const b = camp === 'GOD' ? BAL.god : BAL.demon;
       return { mana: 50, faith: b.faith, chaos: b.chaos };
@@ -6697,9 +6698,37 @@
       $('id-comment').innerText = state.role.comment
         ? '💬 ' + state.role.comment
         : '💬 雲端大數據已將您的專屬特質寫入工作日誌，準備接聽第一通人間崩潰電話。';
+      try {
+        let dEl = $('id-diff');
+        if (!dEl) { dEl = document.createElement('div'); dEl.id = 'id-diff'; const cm = $('id-comment'); cm.parentNode.insertBefore(dEl, cm.nextSibling); }
+        dEl.innerHTML = diffHTML();
+      } catch (e) { }
       const m = loadMeta();
       $('id-reroll').style.display = (m.owned.reroll && !state.rerolled) ? 'block' : 'none';
       $('modal-identity').style.display = 'flex'; try { const c = $('modal-identity').firstElementChild; if (c) c.scrollTop = 0; } catch (e) {}
+    }
+
+    // ===== 難度：輕鬆／標準／困難（只影響每回合流失、回神力與收益倍率）=====
+    const DIFFS = {
+      easy: { label: '輕鬆', desc: '信仰（混沌）每回合只掉 1、神力每回合回 6、收益略高', d: { decay: -1, regen: 1, gain: 0.05 } },
+      normal: { label: '標準', desc: '每回合掉 2、神力回 5', d: { decay: 0, regen: 0, gain: 0 } },
+      hard: { label: '困難', desc: '每回合掉 4、神力回 5（需要邪教與法寶配合）', d: { decay: 2, regen: 0, gain: 0 } }
+    };
+    function curDiff() { try { const k = loadMeta().diff; return DIFFS[k] ? k : 'normal'; } catch (e) { return 'normal'; } }
+    function applyDiff() { const o = DIFFS[curDiff()].d; BAL.decay = BAL_BASE.decay + o.decay; BAL.regen = BAL_BASE.regen + o.regen; BAL.gain = BAL_BASE.gain + o.gain; }
+    function diffHTML() {
+      const cur = curDiff();
+      return '<div style="margin-top:8px; padding:8px 10px; border:1px solid #3f3f46; border-radius:10px;"><div style="font-size:13px; font-weight:900; color:#fcd34d; margin-bottom:6px;">🎚️ 難度（按「正式上工」後生效）</div><div style="display:flex; gap:6px;">' +
+        Object.keys(DIFFS).map(function (k) {
+          const on = k === cur;
+          return '<button type="button" onclick="window.setDiff(\'' + k + '\')" style="flex:1; padding:8px 4px; border-radius:8px; font-size:14px; font-weight:900; cursor:pointer; border:1.5px solid ' + (on ? '#f59e0b' : '#52525b') + '; background:' + (on ? 'rgba(245,158,11,0.25)' : 'transparent') + '; color:' + (on ? '#fde68a' : '#a1a1aa') + ';">' + DIFFS[k].label + '</button>';
+        }).join('') + '</div><div style="font-size:12px; color:#a1a1aa; margin-top:6px; line-height:1.5;">' + DIFFS[cur].desc + '</div></div>';
+    }
+    function setDiff(k) {
+      if (!DIFFS[k]) return;
+      try { const m = loadMeta(); m.diff = k; saveMeta(m); } catch (e) { }
+      applyDiff();
+      try { const el = $('id-diff'); if (el) el.innerHTML = diffHTML(); } catch (e) { }
     }
 
     function triggerStart(camp, isReroll) {
@@ -6843,6 +6872,7 @@
       startWorkNow();
     }
     function startWorkNow() {
+      try { applyDiff(); } catch (e) { }
       const meta = { kind: 'normal' };
       if (state.bootTicket) {
         const raw = state.bootTicket;
@@ -7865,13 +7895,15 @@
     const TUT = [
       '👇 先讀工單，再選一個決策。每個選項都會公開耗多少神力、加減什麼數值，以及🎲成功率；收益越高越容易失手。',
       '⚡ 神力每回合只回 5 點，別一次花光。不夠時可以按上方「🔥換神力」，或選便宜的選項。',
-      '🎯 注意畫面上方的「今日考績線」和「失敗線」：主目標要達標，反向數值別爆表。'
+      '🎯 注意畫面上方的「今日考績線」和「失敗線」：主目標要達標，反向數值別爆表。',
+      '📉 主目標每回合會自己掉一點（人心健忘），光靠單次選擇追不上。「📢邪教」和法寶「加持」會每回合自動幫你加，但邪教也會帶來反向數值與動盪。',
+      '🧪 工單給的供品可以拿去「煉金」做成法寶或丹藥，也能賜給凡人。每個選完的回合，結果欄最下面會寫出這回合總共變動多少。'
     ];
     function tutHTML() {
       try {
-        if (state.turn > 2) { const m = loadMeta(); if (!m.tutDone) { m.tutDone = true; saveMeta(m); } return ''; }
+        if (state.turn > 4) { const m = loadMeta(); if (!m.tutDone) { m.tutDone = true; saveMeta(m); } return ''; }
         if (loadMeta().tutDone) return '';
-        return '<div id="tut-hint" style="border:1px solid #f59e0b; background:rgba(120,53,15,0.35); border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.6; color:#fde68a;">💡 新手提示 ' + (state.turn + 1) + '/3<br>' + TUT[state.turn] +
+        return '<div id="tut-hint" style="border:1px solid #f59e0b; background:rgba(120,53,15,0.35); border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.6; color:#fde68a;">💡 新手提示 ' + (state.turn + 1) + '/5<br>' + TUT[state.turn] +
           '<div style="text-align:right; margin-top:4px;"><button type="button" onclick="window.hideTut()" style="background:none; border:none; color:#a1a1aa; font-size:12px; text-decoration:underline; cursor:pointer;">不再顯示</button></div></div>';
       } catch (e) { return ''; }
     }
@@ -9629,7 +9661,7 @@
     window.skipOpening = skipOpening;
     window.triggerStart = triggerStart;
     window.rerollIdentity = rerollIdentity;
-    window.startWork = startWork;
+    window.startWork = startWork; window.setDiff = setDiff;
     window.openAlchemyModal = openAlchemyModal;
     window.selectAlchSlot = selectAlchSlot;
     window.doAlchemy = doAlchemy; window.pillAsk = pillAsk;
