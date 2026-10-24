@@ -318,7 +318,7 @@
         <div style="font-size:12px; color:#d4d4d8; line-height:1.6; background:rgba(0,0,0,0.5); padding:12px; border-radius:12px; border:1px solid #27272a;">
           <p style="margin:0 0 8px 0;">📅 <b style="color:#fcd34d;">任期</b>：7 回合 = 1 天，7 天 = 49 回合。選擇、已讀不回、賜供品、自訂神蹟各用 1 回合；安撫、換神力、邪教管理不耗回合。</p>
           <p style="margin:0 0 8px 0;">📋 <b style="color:#7dd3fc;">每日考績</b>：每天結束對照「考績線」評 A/B/C/D（A、B 有獎勵），連兩次 D 被 free。考績後三選一永久增益，並預告明天的世界事件。</p>
-          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合自然流失 4 點。</p>
+          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合自然流失 2 點。</p>
           <p style="margin:0 0 8px 0;">⚡ <b style="color:#38bdf8;">神力</b>：每個選項至少耗 3，每回合自然回 5。沒神力可按「🔥換神力」。</p>
           <p style="margin:0 0 8px 0;">🏷️ <b style="color:#34d399;">手段</b>：擅長手段神力 -2、收益 ×1.3；禁忌手段神力 +5、因果債 +10。按鈕上顯示的神力已含加成。</p>
           <p style="margin:0 0 8px 0;">🌟 <b style="color:#a78bfa;">技能與天賦</b>：專屬技能是按鈕或常駐被動；3 階自動天賦於第 1／3／5 天解鎖，條件達成自動發動，點標籤看詳情。</p>
@@ -442,7 +442,7 @@
     function cw() { return (typeof state !== 'undefined' && state && state.camp === 'GOD') ? '新宗教' : '邪教'; }
     const TAG_ICON = { '慈悲': '🕊️', '暴力': '👊', '賄賂': '💰', '欺騙': '🎭', '奉獻': '🙏', '放任': '🛌', '煽動': '📣', '規矩': '📏' };
     // 平衡參數：gain＝主目標收益倍率；opp＝反向數值增幅倍率；regen＝每回合回神力；decay＝主目標每回合自然流失
-    const BAL = { gain: 0.3, opp: 0.3, regen: 5, decay: 4, domainGain: 1.3, domainCut: 2, tabooKarma: 10, tabooMana: 5, cultInc: 0.15, cultOpp: 0.25, rot: 10, tal: { god: 0.65, demon: 0.4, other: 0.7, proc: 0.8 }, god: { faith: 40, chaos: 20 }, demon: { faith: 45, chaos: 15 } };
+    const BAL = { gain: 0.3, opp: 0.3, regen: 5, decay: 2, domainGain: 1.3, domainCut: 2, tabooKarma: 10, tabooMana: 5, cultInc: 0.15, cultOpp: 0.25, rot: 10, tal: { god: 0.65, demon: 0.4, other: 0.7, proc: 0.8 }, god: { faith: 40, chaos: 20 }, demon: { faith: 45, chaos: 15 } };
     function initStats(camp) {
       const b = camp === 'GOD' ? BAL.god : BAL.demon;
       return { mana: 50, faith: b.faith, chaos: b.chaos };
