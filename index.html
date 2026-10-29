@@ -7579,9 +7579,10 @@
 
     function finishTerm() {
       const w = winStat(), n = winName();
+      if (w >= 40 && state.cast && typeof storyFinale === 'function') { try { storyFinale(w, n, w >= QUOTA_END); return; } catch (e) { } }
       if (w >= QUOTA_END) triggerEnding('🎖️', '任期屆滿・優良考績', '七天任期結束，你的【' + n + '】達到 ' + w + '，董事會一致通過續聘，還幫你的辦公桌換了更貴的椅子。', 'excellent');
       else if (w >= 40) triggerEnding('📄', '任期屆滿・平庸考績', '七天任期結束，你的【' + n + '】停在 ' + w + '。董事會評語：「不好不壞，可以繼續」，薪水沒有變，工作量加倍。', 'mediocre');
-      else triggerEnding('📦', '任期屆滿・被資遣', '七天任期結束，你的【' + n + '】只有 ' + w + '。董事會感謝你的付出，並請你在三十分鐘內交出識別證。', 'laidoff');
+      else triggerEnding('📦', '任期屆滿・被資遣', '七天任期結束，你的【' + n + '】只有 ' + w + '。董事會感謝你的付出，並請你在三十分鐘內交出識別證。\n\n【後續：結算塔】被資遣的人沒有消失。他們被送進塔裡，變成守著樓層的呆帳靈魂。', 'laidoff');
     }
 
     // ===== 邪教經營 =====
@@ -8460,6 +8461,35 @@
     ];
 
 
+    // ===== 第七天結算：三選一（留下／解約／掀桌；E 局多一個「醒來」）=====
+    // {rival}＝死對頭、{n}＝考績名稱、{w}＝考績分數、{wit}＝依班底關係產生的一句話
+    const FINALE_ASK = '終端把所有碎片拼在一起，只留下一個問題給你：\n「任期結束。你要怎麼處理你的合約？」';
+    const FINALE_CHOICES = [
+      { id: 'stay', icon: '🖋️', name: '留下・轉正', sub: '續約，成為正式牧羊犬',
+        title: '留下・轉正',
+        text: '你在續約書上簽了名。董事會說恭喜你，從今天起不再是試用期，而是「正式牧羊犬」，新職稱是「招募主管」。\n\n下一批剛死的人，由你親自去歡迎。{wit}',
+        hook: '【後續：結算塔】你的辦公室在塔的第 12 層。窗外有東西在敲玻璃，那是上一批被你送走的人。' },
+      { id: 'quit', icon: '✂️', name: '解約・回到人間', sub: '代價：忘記一切',
+        title: '解約・回到人間',
+        text: '你按下了解約。終端問：「確定要刪除全部記憶嗎？」你說確定。\n\n你在自己的床上醒來，鬧鐘響著，你忘了昨天夢到什麼，只記得有隻穿紅西裝的兔子對你揮手。{wit}',
+        hook: '【後續：結算塔】夢裡一直有一座塔。你每晚往上爬一層，爬到第七層時，你開始想起自己的名字。' },
+      { id: 'flip', icon: '💥', name: '掀桌・叛逃', sub: '和 {rival} 一起逃走',
+        title: '掀桌・叛逃',
+        text: '你把識別證拍在稽核員桌上，抓住{rival}的手就往外跑。警報響起，所有人同時抬頭看你，連眨眼都在同一個間隔。\n\n董事會的公告很短：「叛逃者名單新增兩人。」{wit}',
+        hook: '【後續：結算塔】你們沒有信仰，也沒有混沌，只剩彼此和一條紅線。要拿回合約，只能往上爬。' },
+      { id: 'wake', icon: '💓', name: '醒來', sub: '抓住工單裡那個聲音', only: 4,
+        title: '醒來',
+        text: '工單裡傳來熟悉的聲音，是你家人在哭。你抓住那個聲音，往上游。\n\n你醒來時滿身管線，窗邊有人喊：「他有反應了！」你不記得自己曾經是神，或是魔。{wit}',
+        hook: '【後續：結算塔】出院那天，路邊有隻兔子叼著一張名片，上面寫「人資・月老」。名片背面畫著一座塔。' }
+    ];
+    // 班底見證句：幫過的人與被利用的人，會在結算時各說一句
+    const FINALE_WIT = {
+      stay: { help: '{a}偷偷託人帶話：「你人真好，你別變成他們。」', use: '{a}沒有出現。他的位置上，放著你簽過的那張單子。', none: '沒有人替你鼓掌。' },
+      quit: { help: '{a}曾經被你幫過，可惜他再也不會記得是誰。', use: '{a}曾經被你利用過，他是唯一還記得你的人。', none: '那些你沒見過的人，從此也不會見到你。' },
+      flip: { help: '{a}在門口替你擋了一下警衛：「快走，這次換我。」', use: '{a}在走廊盡頭看著你，什麼都沒說，把門鎖上了。', none: '沒有人替你開門，你自己踹開的。' },
+      wake: { help: '{a}曾經被你幫過，他在你醒來前，替你把工單回覆了一遍。', use: '{a}曾經被你利用過，你醒來時，他的名字已經從終端消失。', none: '工單櫃台空蕩蕩的，只剩你一個人的腳步聲。' }
+    };
+
     // ===== 劇情系統（第一期）：詭異度、七天章節卡、班底記憶、真相碎片 =====
     // 設計見「靈魂結算終端・劇情大綱 v0.1」。詭異度是隱藏變數（0~100），隨天數、因果債、禁忌手段上升。
 
@@ -8644,6 +8674,48 @@
       state.cast.forEach(function (m) { try { const t = storyEnding(m); if (t) L.push('📖 ' + npcOf(m.id).name + '：' + t); } catch (e) { } });
       try { L.push('📜 真相碎片 ' + Object.keys(loadMeta().frags || {}).length + '/24　本局真相：' + TRUTHS[state.truth || 0].name); } catch (e) { }
       return L.join('\n');
+    }
+
+    // ===== 第七天結算：三選一 =====
+    function finaleList() {
+      const ti = state.truth || 0;
+      return FINALE_CHOICES.filter(function (c) { return c.only == null || c.only === ti; });
+    }
+    function finaleWit(id) {
+      const W = FINALE_WIT[id]; let helped = [], used = [];
+      (state.cast || []).forEach(function (m) { if (m.n > 0) { const nm = npcOf(m.id).name; if (m.fate > 0) helped.push(nm); else if (m.fate < 0) used.push(nm); } });
+      const out = [];
+      if (helped.length) out.push(W.help.replace('{a}', helped[0]));
+      if (used.length) out.push(W.use.replace('{a}', used[0]));
+      if (!out.length) out.push(W.none);
+      return out.join('\n');
+    }
+    function storyFinale(w, n, ex) {
+      const rival = (state.role && state.role.rival) || '死對頭';
+      state.finaleCtx = { w: w, n: n, ex: ex };
+      let el = document.getElementById('modal-finale');
+      if (!el) { el = document.createElement('div'); el.id = 'modal-finale'; document.body.appendChild(el); }
+      el.style.cssText = 'position:fixed; inset:0; z-index:90; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+      let btns = '';
+      finaleList().forEach(function (c, i) {
+        btns += '<button type="button" onclick="window.storyFinalePick(' + i + ')" style="display:block; width:100%; text-align:left; margin-top:8px; padding:11px 12px; border-radius:10px; border:1px solid #f59e0b; background:#1c1917; color:#fde68a; font-weight:900; font-size:15px; cursor:pointer;">' +
+          c.icon + ' ' + esc(c.name) + '<div style="font-size:11px; font-weight:400; color:#a1a1aa; margin-top:2px;">' + esc(c.sub.replace('{rival}', rival)) + '</div></button>';
+      });
+      el.innerHTML = '<div style="width:min(92vw,420px); border:1px solid #dc2626; border-radius:16px; padding:18px 16px; background:#09090b; color:#e4e4e7; font-size:14px; line-height:1.7;">' +
+        '<div style="font-size:11px; letter-spacing:2px; color:#f87171;">TERMINAL LOG / FINAL DAY</div>' +
+        '<div style="font-size:18px; font-weight:900; margin:4px 0 10px; color:#fde68a;">第 7 天・結算</div>' +
+        '<div style="white-space:pre-line;">' + esc(FINALE_ASK) + '</div>' + btns + '</div>';
+    }
+    function storyFinalePick(i) {
+      const c = finaleList()[i], cx = state.finaleCtx;
+      if (!c || !cx || state.over) return;
+      const el = document.getElementById('modal-finale'); if (el) el.style.display = 'none';
+      const rival = (state.role && state.role.rival) || '死對頭';
+      state.finale = c.id;
+      try { const m = loadMeta(); m.finales = m.finales || {}; m.finales[c.id] = (m.finales[c.id] || 0) + 1; saveMeta(m); } catch (e) { }
+      const grade = cx.ex ? '（優良考績，【' + cx.n + '】' + cx.w + '）' : '（平庸考績，【' + cx.n + '】' + cx.w + '）';
+      const text = c.text.replace(/\{rival\}/g, rival).replace('{wit}', '\n' + finaleWit(c.id));
+      triggerEnding(c.icon, '任期屆滿・' + c.title, grade + '\n' + text + '\n\n' + c.hook, cx.ex ? 'excellent' : 'mediocre');
     }
 
     // ===== 工單獨立頁：主畫面只有「接取願望／詛咒」按鈕，點了才進工單頁 =====
@@ -9679,7 +9751,7 @@
     window.handleCustomMiracle = handleCustomMiracle;
     window.pickBoon = pickBoon;
     window.openCults = openCults;
-    window.storyClose = storyClose; window.storyPanel = storyPanel; window.tpOpen = tpOpen; window.tpClose = tpClose; window.tpButterfly = tpButterfly; try { tpInit(); } catch (e) { window._tpDone = false; }
+    window.storyClose = storyClose; window.storyFinalePick = storyFinalePick; window.storyPanel = storyPanel; window.tpOpen = tpOpen; window.tpClose = tpClose; window.tpButterfly = tpButterfly; try { tpInit(); } catch (e) { window._tpDone = false; }
     window.cultCalm = cultCalm;
     window.cultTutStart = cultTutStart; window.cultTutEnd = cultTutEnd; window.cultTutNext = cultTutNext; window.cultTutSim = cultTutSim; window.cultTutAct = cultTutAct;
     window.cultSupport = cultSupport;
