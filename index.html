@@ -145,7 +145,7 @@
           </div>
           <div style="background:rgba(0,0,0,0.5); border:1px solid #27272a; border-radius:12px; padding:12px; margin-bottom:10px;">
             <div style="font-weight:900; color:#38bdf8; margin-bottom:4px;">🔁 每回合怎麼玩</div>
-            1. 三個選項各有取捨，<b>按鈕上只顯示要花多少神力</b>，會加什麼、扣什麼要選了才知道，靠你讀工單內容判斷。<br>2. 選項最少耗 3 神力；每回合只回 5 點，要精打細算。<br>3. 選擇、已讀不回、賜供品、自訂神蹟會用掉 1 回合；安撫人間、換神力、經營邪教<b>不耗回合</b>。<br>4. 畫面最下方跑馬燈顯示剛剛這一步的數值變化。
+            0. 每位神魔有<b>專屬題材</b>：月老多收感情與家庭、財神多收金錢與職場，身分畫面會顯示。<br>1. 三個選項各有取捨，<b>按鈕上只顯示要花多少神力</b>，會加什麼、扣什麼要選了才知道，靠你讀工單內容判斷。<br>2. 選項最少耗 3 神力；每回合只回 5 點，要精打細算。<br>3. 選擇、已讀不回、賜供品、自訂神蹟會用掉 1 回合；安撫人間、換神力、經營邪教<b>不耗回合</b>。<br>4. 畫面最下方跑馬燈顯示剛剛這一步的數值變化。
           </div>
           <div style="background:rgba(0,0,0,0.5); border:1px solid #27272a; border-radius:12px; padding:12px; margin-bottom:10px;">
             <div style="font-weight:900; color:#34d399; margin-bottom:4px;">🏷️ 手段標籤與身分</div>
@@ -5954,7 +5954,7 @@
           return fillItems(JSON.parse(JSON.stringify(src)));
         }
         for (let i = 0; i < 12 && tpls.length; i++) {
-          const t = expandTemplate(tpls[Math.floor(Math.random() * tpls.length)]);
+          const t = expandTemplate(pickTplWeighted(tpls));
           if (seen.indexOf(camp + ':' + t._key) === -1) { markSeen(camp + ':' + t._key); return fillItems(t); }
         }
         forgetSeen(camp + ':');
@@ -6528,7 +6528,7 @@
       return '陣營：' + (state.camp === 'GOD' ? '神界' : '魔界') +
         '；神魔：' + (state.role.name || '') + (state.role.job ? '（' + state.role.job + '）' : '') +
         '（權柄：' + (state.role.domain || '') + '；禁忌：' + (state.role.taboo || '') + '；死對頭：' + (state.role.rival || '') + '）' +
-        '；擅長手段：' + ((state.role.domainTags || []).join('、') || '無') + '；禁忌手段：' + (state.role.tabooTag || '無') +
+        (roleThemes().length ? '；專屬題材（工單內容請偏向）：' + themeLine() : '') + '；擅長手段：' + ((state.role.domainTags || []).join('、') || '無') + '；禁忌手段：' + (state.role.tabooTag || '無') +
         '；任期第 ' + dayNo() + ' 天（共 7 天）第 ' + turnInDay() + ' 回合' + (ev ? '；今日事件：' + ev.name : '') +
         '；目前數值 神力' + state.stats.mana + ' 信仰' + state.stats.faith + ' 混沌' + state.stats.chaos +
         ' 因果債' + state.karmaDebt +
@@ -6694,7 +6694,7 @@
       $('id-taboo').innerText = state.role.taboo || '—';
       $('id-rival').innerText = state.role.rival || '—';
       $('id-tags').innerHTML = '✨ <b style="color:#34d399;">擅長手段</b>：' + esc(tagLine(state.role)) + '（神力 -2、收益 ×1.3）<br>' +
-        '⛔ <b style="color:#f87171;">禁忌手段</b>：' + esc(TAG_ICON[state.role.tabooTag] + state.role.tabooTag) + '（神力 +5、因果債 +10）';
+        (roleThemes().length ? '📮 <b style="color:#fbbf24;">專屬題材</b>：' + esc(themeLine()) + '（這類' + (state.camp === 'GOD' ? '願望' : '詛咒') + '會比較常找上你）<br>' : '') + '⛔ <b style="color:#f87171;">禁忌手段</b>：' + esc(TAG_ICON[state.role.tabooTag] + state.role.tabooTag) + '（神力 +5、因果債 +10）';
       $('id-skill').innerHTML = talentIdentityHTML(state.role);
       $('id-comment').innerText = state.role.comment
         ? '💬 ' + state.role.comment
@@ -8501,6 +8501,44 @@
       flip: { help: '{a}在門口替你擋了一下警衛：「快走，這次換我。」', use: '{a}在走廊盡頭看著你，什麼都沒說，把門鎖上了。', none: '沒有人替你開門，你自己踹開的。' },
       wake: { help: '{a}曾經被你幫過，他在你醒來前，替你把工單回覆了一遍。', use: '{a}曾經被你利用過，你醒來時，他的名字已經從終端消失。', none: '工單櫃台空蕩蕩的，只剩你一個人的腳步聲。' }
     };
+
+    // ===== 專屬題材：每位神魔偏向收到自己權柄範圍的願望／詛咒（月老多收感情、財神多收金錢）=====
+    const THEME_NAME = { love: '💞感情', family: '🏠家庭', work: '💼職場', money: '💰金錢', study: '📚課業', luck: '🌦️運勢天候', life: '🌿生活健康', media: '📣輿論', law: '⚖️官司法規', curse: '🕯️怨念詛咒' };
+    const TPL_THEME = {
+      'g-overtime': 'work', 'g-love': 'love', 'g-exam': 'study', 'g-lottery': 'money', 'g-family': 'family', 'g-traffic': 'luck', 'g-diet': 'life', 'g-newbie': 'work',
+      'd-curse': 'curse', 'd-scam': 'money', 'd-frame': 'law', 'd-mob': 'media', 'd-loan': 'money', 'd-rent': 'money', 'd-match': 'curse', 'd-tax': 'money',
+      'g-ghost': 'luck', 'g-pet': 'life', 'g-promo': 'work', 'g-rain': 'luck', 'g-rumor': 'media', 'g-lazy': 'study', 'g-lonely': 'love', 'g-flood': 'luck',
+      'd-rumor2': 'media', 'd-bet': 'money', 'd-office': 'work', 'd-gossip': 'media', 'd-debt': 'money', 'd-ad': 'money', 'd-blame': 'work', 'd-secret': 'work',
+      'g-grade': 'study', 'g-boss': 'work', 'g-wallet': 'money', 'g-interview': 'work', 'g-leave': 'work', 'g-move': 'life', 'g-breakup': 'love', 'g-marry': 'family',
+      'g-stage': 'life', 'g-start': 'money', 'g-garden': 'life', 'g-ship': 'luck', 'g-memory': 'life', 'g-heir': 'family', 'g-night': 'life',
+      'd-credit': 'work', 'd-cheat': 'law', 'd-ex': 'love', 'd-review': 'media', 'd-ticket': 'money', 'd-lease': 'law', 'd-coin': 'money', 'd-vote': 'law',
+      'd-law': 'law', 'd-id': 'law', 'd-influ': 'media', 'd-claim': 'money', 'd-prank': 'curse', 'd-copy': 'law', 'd-fund': 'money'
+    };
+    const ROLE_THEMES = {
+      g01: ['love', 'family'], g02: ['money', 'work'], g03: ['life', 'money', 'luck'], g04: ['luck', 'family'], g05: ['law', 'work'],
+      g06: ['love', 'luck'], g07: ['work', 'study'], g08: ['media', 'study'], g09: ['luck', 'work'], g10: ['work', 'media', 'money'],
+      g11: ['work', 'study'], g12: ['work', 'luck'], g13: ['work', 'law'], g14: ['life', 'family', 'love'], g15: ['family', 'study', 'life'],
+      g16: ['luck', 'life'], g17: ['life', 'family'], g18: ['work', 'family'], g19: ['money', 'luck'], g20: ['law', 'work'],
+      g21: ['love', 'media'], g22: ['study', 'luck'], g23: ['life', 'money'], g24: ['life', 'study'], g25: ['work', 'money'],
+      g26: ['study', 'luck'], g27: ['love', 'life'], g28: ['luck', 'life'], g29: ['luck', 'money'], g30: ['luck', 'family'],
+      d01: ['work', 'law'], d02: ['media', 'love'], d03: ['media', 'curse'], d04: ['law', 'work'], d05: ['love', 'media'],
+      d06: ['curse', 'media'], d07: ['law', 'money'], d08: ['media', 'curse'], d09: ['money', 'work'], d10: ['money', 'curse'],
+      d11: ['media', 'law', 'work'], d12: ['media', 'money', 'love'], d13: ['work', 'law'], d14: ['money', 'work'], d15: ['love', 'media', 'money'],
+      d16: ['love', 'curse'], d17: ['curse', 'money'], d18: ['love', 'curse', 'media'], d19: ['curse', 'law'], d20: ['curse', 'work'],
+      d21: ['curse', 'love'], d22: ['curse', 'money'], d23: ['curse', 'work'], d24: ['curse', 'love'], d25: ['curse', 'love'],
+      d26: ['curse', 'law'], d27: ['curse', 'love'], d28: ['curse', 'media'], d29: ['curse', 'money'], d30: ['curse', 'law']
+    };
+    function roleThemes() { return (state && state.role && ROLE_THEMES[state.role.id]) || []; }
+    function themeLine() { return roleThemes().map(function (t) { return THEME_NAME[t]; }).join('、'); }
+    // 偏向抽題：符合本角色題材的模板權重 ×5；自訂角色沒有題材就等機率
+    function pickTplWeighted(tpls) {
+      const th = roleThemes();
+      if (!th.length) return tpls[Math.floor(Math.random() * tpls.length)];
+      const w = tpls.map(function (t) { return th.indexOf(TPL_THEME[t.id]) !== -1 ? 5 : 1; });
+      let r = Math.random() * w.reduce(function (a, b) { return a + b; }, 0);
+      for (let i = 0; i < tpls.length; i++) { r -= w[i]; if (r <= 0) return tpls[i]; }
+      return tpls[tpls.length - 1];
+    }
 
     // ===== 劇情系統（第一期）：詭異度、七天章節卡、班底記憶、真相碎片 =====
     // 設計見「靈魂結算終端・劇情大綱 v0.1」。詭異度是隱藏變數（0~100），隨天數、因果債、禁忌手段上升。
