@@ -141,7 +141,7 @@
         <div style="font-size:12px; color:#d4d4d8; line-height:1.65;">
           <div style="background:rgba(0,0,0,0.5); border:1px solid #27272a; border-radius:12px; padding:12px; margin-bottom:10px;">
             <div style="font-weight:900; color:#fcd34d; margin-bottom:4px;">🎯 你要做什麼？</div>
-            你死後被丟進天庭／地獄當社畜主管，<b>任期 7 天，每天 10 回合，共 70 回合</b>。每回合接一張人間許願工單，做決策、拚數值。<br><b>🕊️ 神界</b>：【信仰】衝到 100 提前勝利（第 5 天起才算，之前最多停在 99）；【混沌】到 80 失敗。<br><b>🩸 魔界</b>：【混沌】衝到 100 提前勝利（第 5 天起才算）；【信仰】到 85 被招安失敗。魔界的工單是凡人委託的<b>詛咒、斂財、陷害</b>，神界的工單則是人間許願。<br>兩邊共通：【信仰】低於 20 被開除。<br><span style="color:#a1a1aa; font-size:11px;">沒提前達標也沒關係：任期屆滿時主目標 ≥ 70 算優良、40~69 平庸、&lt; 40 被資遣。主目標每回合還會自然流失 4 點，要持續經營。</span>
+            你死後被丟進天庭／地獄當社畜主管，<b>任期 7 天，每天 7 回合，共 49 回合</b>。每回合接一張人間許願工單，做決策、拚數值。<br><b>🕊️ 神界</b>：【信仰】衝到 100 提前勝利；【混沌】到 80 失敗。<br><b>🩸 魔界</b>：【混沌】衝到 100 提前勝利；【信仰】到 85 被招安失敗。魔界的工單是凡人委託的<b>詛咒、斂財、陷害</b>，神界的工單則是人間許願。<br>兩邊共通：【信仰】低於 20 被開除。<br><span style="color:#a1a1aa; font-size:11px;">沒提前達標也沒關係：任期屆滿時主目標 ≥ 70 算優良、40~69 平庸、&lt; 40 被資遣。主目標每回合還會自然流失 4 點，要持續經營。</span>
           </div>
           <div style="background:rgba(0,0,0,0.5); border:1px solid #27272a; border-radius:12px; padding:12px; margin-bottom:10px;">
             <div style="font-weight:900; color:#38bdf8; margin-bottom:4px;">🔁 每回合怎麼玩</div>
@@ -316,9 +316,9 @@
           <button type="button" onclick="window.toggleModal('modal-rules')" style="background:none; border:none; color:#a1a1aa; font-size:14px; cursor:pointer;">✕ 關閉</button>
         </div>
         <div style="font-size:12px; color:#d4d4d8; line-height:1.6; background:rgba(0,0,0,0.5); padding:12px; border-radius:12px; border:1px solid #27272a;">
-          <p style="margin:0 0 8px 0;">📅 <b style="color:#fcd34d;">任期</b>：10 回合 = 1 天，7 天 = 70 回合。選擇、已讀不回、賜供品、自訂神蹟各用 1 回合；安撫、換神力、邪教管理不耗回合。</p>
+          <p style="margin:0 0 8px 0;">📅 <b style="color:#fcd34d;">任期</b>：7 回合 = 1 天，7 天 = 49 回合。選擇、已讀不回、賜供品、自訂神蹟各用 1 回合；安撫、換神力、邪教管理不耗回合。</p>
           <p style="margin:0 0 8px 0;">📋 <b style="color:#7dd3fc;">每日考績</b>：每天結束對照「考績線」評 A/B/C/D（A、B 有獎勵），連兩次 D 被 free。考績後三選一永久增益，並預告明天的世界事件。</p>
-          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利（第 5 天起才算）；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合會自然流失（輕鬆 1／標準 2／困難 4 點，可在開局身分畫面選難度）。</p>
+          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合會自然流失（輕鬆 1／標準 2／困難 4 點，可在開局身分畫面選難度）。</p>
           <p style="margin:0 0 8px 0;">⚡ <b style="color:#38bdf8;">神力</b>：每個選項至少耗 3，每回合自然回 5。沒神力可按「🔥換神力」。</p>
           <p style="margin:0 0 8px 0;">👻 <b style="color:#a78bfa;">你是看不見的存在</b>：你以意念降臨在凡人身邊，他們看不見你，只隱約感覺得到。選項裡的「託夢」「暗示」「低語」，就是你傳達意念的方式。</p>
           <p style="margin:0 0 8px 0;">🏷️ <b style="color:#34d399;">手段</b>：擅長手段神力 -2、收益 ×1.3；禁忌手段神力 +5、因果債 +10。按鈕上顯示的神力已含加成。</p>
@@ -431,8 +431,8 @@
     // ===== 設定 =====
     const DEFAULT_API_KEY = '';
     const GEMINI_MODELS = ['gemini-3.5-flash', 'gemini-2.5-flash'];
-    // 任期：10 回合 = 1 天，7 天 = 70 回合
-    const TURNS_PER_DAY = 10, TOTAL_DAYS = 7, TOTAL_TURNS = 70, QUOTA_END = 70, EARLY_MIN = 40;
+    // 任期：7 回合 = 1 天，7 天 = 49 回合
+    const TURNS_PER_DAY = 7, TOTAL_DAYS = 7, TOTAL_TURNS = 49, QUOTA_END = 70;
     // 反向數值上限：神界混沌 ≥ 80 失敗（天庭失控）；魔界信仰 ≥ 85 失敗（被天界招安）
     const LIMITS = {
       GOD:   { stat: 'chaos', max: 80, name: '混沌' },
@@ -6586,7 +6586,7 @@
     }
 
     // ===== 下一張工單種類：邪教暴動 > 因果爆發 > 凡人回訪 > 死對頭（每天一次）> 一般 =====
-    // n＝這張工單是第幾張（1~70）
+    // n＝這張工單是第幾張（1~49）
     function pickKind(n) {
       const up = state.cults.find(c => c.unrest >= 100 && !c.pending);
       if (up) return { kind: 'cult', cult: up };
@@ -6752,7 +6752,7 @@
       state.events = evs;
       // 死對頭：第 2~7 天每天出手一次
       state.rivalTurns = [];
-      for (let d = 2; d <= TOTAL_DAYS; d++) state.rivalTurns.push((d - 1) * TURNS_PER_DAY + 2 + Math.floor(Math.random() * 8));
+      for (let d = 2; d <= TOTAL_DAYS; d++) state.rivalTurns.push((d - 1) * TURNS_PER_DAY + 2 + Math.floor(Math.random() * 6));
       storyReset(); try { tpReset(); } catch (e) { }
       applyMetaStart();
 
@@ -7403,11 +7403,6 @@
           triggerEnding('⚡', '因果清算', '你累積的因果債爆表，天雷與債主同時上門，你被清算成一縷青煙。', 'karma');
           return true;
         }
-      }
-      // 提前達標要等到第 5 天以後才算；之前衝到滿格只會停在 99，讓劇情至少走完一半
-      if (state.turn < EARLY_MIN) {
-        const wk0 = state.camp === 'GOD' ? 'faith' : 'chaos';
-        if (state.stats[wk0] >= 100) state.stats[wk0] = 99;
       }
       updateHeaderUI();
       if (state.camp === 'GOD' && state.stats.faith >= 100) {
@@ -8482,13 +8477,25 @@
         title: '掀桌・叛逃',
         text: '你把識別證拍在稽核員桌上，抓住{rival}的手就往外跑。警報響起，所有人同時抬頭看你，連眨眼都在同一個間隔。\n\n董事會的公告很短：「叛逃者名單新增兩人。」{wit}',
         hook: '【後續：結算塔】你們沒有信仰，也沒有混沌，只剩彼此和一條紅線。要拿回合約，只能往上爬。' },
+      { id: 'move', icon: '🔀', name: '轉部門・調去另一邊', sub: '保留記憶，換個部門重新報到',
+        title: '轉部門',
+        text: '你向人資遞了轉調單。月老把蓋章的橡皮擦在桌角，說：「好啊，反正每個部門都缺人。」\n\n{lore}{wit}',
+        hook: '【後續：結算塔】轉調單上蓋著一個你沒見過的章，圖案是一座塔。下一個部門的辦公室，就在那座塔裡。' },
       { id: 'wake', icon: '💓', name: '醒來', sub: '抓住工單裡那個聲音', only: 4,
         title: '醒來',
         text: '工單裡傳來熟悉的聲音，是你家人在哭。你抓住那個聲音，往上游。\n\n你醒來時滿身管線，窗邊有人喊：「他有反應了！」你不記得自己曾經是神，或是魔。{wit}',
         hook: '【後續：結算塔】出院那天，路邊有隻兔子叼著一張名片，上面寫「人資・月老」。名片背面畫著一座塔。' }
     ];
     // 班底見證句：幫過的人與被利用的人，會在結算時各說一句
+    // 轉部門的線索：依累計轉調次數遞進——為什麼人手不足、原本的神魔去哪了、第三勢力是誰
+    const FINALE_LORE = [
+      '交接單上寫著：本部門編制三十人，現有三人。你問人資為什麼這麼缺人，他只說：「原因保密。」',
+      '新部門的茶水間裡，有人留下了前任的東西：一支斷掉的權杖、一把生鏽的鐮刀。名牌被摘走了，櫃子沒有積灰，像昨天還有人用。',
+      '檔案室最裡面有一份《清算紀錄》：原本的神與魔不是離職。他們被某個東西一個一個殺害，遺體不見了，位子空了，董事會才開始向剛死的人類發出徵召令。紀錄裡只稱那個東西為「第三勢力」。',
+      '你終於看懂了：塔是第三勢力蓋的。被資遣的呆帳靈魂是牠的獵犬，也是牠的兵。你這次轉部門不是逃走，而是被牠看見了。'
+    ];
     const FINALE_WIT = {
+      move: { help: '{a}偷偷塞給你一張紙條：「去問檔案室，別問人資。」', use: '{a}站在走廊盡頭，說：「你換到哪裡，我都會在那裡等你還。」', none: '沒有人送你，行李只有一張識別證。' },
       stay: { help: '{a}偷偷託人帶話：「你人真好，你別變成他們。」', use: '{a}沒有出現。他的位置上，放著你簽過的那張單子。', none: '沒有人替你鼓掌。' },
       quit: { help: '{a}曾經被你幫過，可惜他再也不會記得是誰。', use: '{a}曾經被你利用過，他是唯一還記得你的人。', none: '那些你沒見過的人，從此也不會見到你。' },
       flip: { help: '{a}在門口替你擋了一下警衛：「快走，這次換我。」', use: '{a}在走廊盡頭看著你，什麼都沒說，把門鎖上了。', none: '沒有人替你開門，你自己踹開的。' },
@@ -8717,9 +8724,10 @@
       const el = document.getElementById('modal-finale'); if (el) el.style.display = 'none';
       const rival = (state.role && state.role.rival) || '死對頭';
       state.finale = c.id;
-      try { const m = loadMeta(); m.finales = m.finales || {}; m.finales[c.id] = (m.finales[c.id] || 0) + 1; saveMeta(m); } catch (e) { }
+      let moves = 0;
+      try { const m = loadMeta(); m.finales = m.finales || {}; m.finales[c.id] = (m.finales[c.id] || 0) + 1; if (c.id === 'move') m.moves = (m.moves || 0) + 1; moves = m.moves || 0; saveMeta(m); } catch (e) { }
       const grade = cx.ex ? '（優良考績，【' + cx.n + '】' + cx.w + '）' : '（平庸考績，【' + cx.n + '】' + cx.w + '）';
-      const text = c.text.replace(/\{rival\}/g, rival).replace('{wit}', '\n' + finaleWit(c.id));
+      const text = c.text.replace(/\{rival\}/g, rival).replace('{lore}', c.id === 'move' ? FINALE_LORE[Math.min(FINALE_LORE.length, Math.max(1, moves)) - 1] + '\n' : '').replace('{wit}', '\n' + finaleWit(c.id));
       triggerEnding(c.icon, '任期屆滿・' + c.title, grade + '\n' + text + '\n\n' + c.hook, cx.ex ? 'excellent' : 'mediocre');
     }
 
