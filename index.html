@@ -141,7 +141,7 @@
         <div style="font-size:12px; color:#d4d4d8; line-height:1.65;">
           <div style="background:rgba(0,0,0,0.5); border:1px solid #27272a; border-radius:12px; padding:12px; margin-bottom:10px;">
             <div style="font-weight:900; color:#fcd34d; margin-bottom:4px;">🎯 你要做什麼？</div>
-            你死後被丟進天庭／地獄當社畜主管，<b>任期 7 天，每天 7 回合，共 49 回合</b>。每回合接一張人間許願工單，做決策、拚數值。<br><b>🕊️ 神界</b>：【信仰】衝到 100 提前勝利；【混沌】到 80 失敗。<br><b>🩸 魔界</b>：【混沌】衝到 100 提前勝利；【信仰】到 85 被招安失敗。魔界的工單是凡人委託的<b>詛咒、斂財、陷害</b>，神界的工單則是人間許願。<br>兩邊共通：【信仰】低於 20 被開除。<br><span style="color:#a1a1aa; font-size:11px;">沒提前達標也沒關係：任期屆滿時主目標 ≥ 70 算優良、40~69 平庸、&lt; 40 被資遣。主目標每回合還會自然流失 4 點，要持續經營。</span>
+            你死後被丟進天庭／地獄當社畜主管，<b>任期 7 天，每天 10 回合，共 70 回合</b>。每回合接一張人間許願工單，做決策、拚數值。<br><b>🕊️ 神界</b>：【信仰】衝到 100 提前勝利（第 5 天起才算，之前最多停在 99）；【混沌】到 80 失敗。<br><b>🩸 魔界</b>：【混沌】衝到 100 提前勝利（第 5 天起才算）；【信仰】到 85 被招安失敗。魔界的工單是凡人委託的<b>詛咒、斂財、陷害</b>，神界的工單則是人間許願。<br>兩邊共通：【信仰】低於 20 被開除。<br><span style="color:#a1a1aa; font-size:11px;">沒提前達標也沒關係：任期屆滿時主目標 ≥ 70 算優良、40~69 平庸、&lt; 40 被資遣。主目標每回合還會自然流失 4 點，要持續經營。</span>
           </div>
           <div style="background:rgba(0,0,0,0.5); border:1px solid #27272a; border-radius:12px; padding:12px; margin-bottom:10px;">
             <div style="font-weight:900; color:#38bdf8; margin-bottom:4px;">🔁 每回合怎麼玩</div>
@@ -316,9 +316,9 @@
           <button type="button" onclick="window.toggleModal('modal-rules')" style="background:none; border:none; color:#a1a1aa; font-size:14px; cursor:pointer;">✕ 關閉</button>
         </div>
         <div style="font-size:12px; color:#d4d4d8; line-height:1.6; background:rgba(0,0,0,0.5); padding:12px; border-radius:12px; border:1px solid #27272a;">
-          <p style="margin:0 0 8px 0;">📅 <b style="color:#fcd34d;">任期</b>：7 回合 = 1 天，7 天 = 49 回合。選擇、已讀不回、賜供品、自訂神蹟各用 1 回合；安撫、換神力、邪教管理不耗回合。</p>
+          <p style="margin:0 0 8px 0;">📅 <b style="color:#fcd34d;">任期</b>：10 回合 = 1 天，7 天 = 70 回合。選擇、已讀不回、賜供品、自訂神蹟各用 1 回合；安撫、換神力、邪教管理不耗回合。</p>
           <p style="margin:0 0 8px 0;">📋 <b style="color:#7dd3fc;">每日考績</b>：每天結束對照「考績線」評 A/B/C/D（A、B 有獎勵），連兩次 D 被 free。考績後三選一永久增益，並預告明天的世界事件。</p>
-          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合會自然流失（輕鬆 1／標準 2／困難 4 點，可在開局身分畫面選難度）。</p>
+          <p style="margin:0 0 8px 0;">🏁 <b style="color:#fcd34d;">勝負</b>：主目標（神界信仰／魔界混沌）到 100 提前勝利（第 5 天起才算）；任期屆滿 ≥ 70 優良、40~69 平庸、&lt;40 資遣。主目標每回合會自然流失（輕鬆 1／標準 2／困難 4 點，可在開局身分畫面選難度）。</p>
           <p style="margin:0 0 8px 0;">⚡ <b style="color:#38bdf8;">神力</b>：每個選項至少耗 3，每回合自然回 5。沒神力可按「🔥換神力」。</p>
           <p style="margin:0 0 8px 0;">👻 <b style="color:#a78bfa;">你是看不見的存在</b>：你以意念降臨在凡人身邊，他們看不見你，只隱約感覺得到。選項裡的「託夢」「暗示」「低語」，就是你傳達意念的方式。</p>
           <p style="margin:0 0 8px 0;">🏷️ <b style="color:#34d399;">手段</b>：擅長手段神力 -2、收益 ×1.3；禁忌手段神力 +5、因果債 +10。按鈕上顯示的神力已含加成。</p>
@@ -431,8 +431,8 @@
     // ===== 設定 =====
     const DEFAULT_API_KEY = '';
     const GEMINI_MODELS = ['gemini-3.5-flash', 'gemini-2.5-flash'];
-    // 任期：7 回合 = 1 天，7 天 = 49 回合
-    const TURNS_PER_DAY = 7, TOTAL_DAYS = 7, TOTAL_TURNS = 49, QUOTA_END = 70;
+    // 任期：10 回合 = 1 天，7 天 = 70 回合
+    const TURNS_PER_DAY = 10, TOTAL_DAYS = 7, TOTAL_TURNS = 70, QUOTA_END = 70, EARLY_MIN = 40;
     // 反向數值上限：神界混沌 ≥ 80 失敗（天庭失控）；魔界信仰 ≥ 85 失敗（被天界招安）
     const LIMITS = {
       GOD:   { stat: 'chaos', max: 80, name: '混沌' },
@@ -6586,7 +6586,7 @@
     }
 
     // ===== 下一張工單種類：邪教暴動 > 因果爆發 > 凡人回訪 > 死對頭（每天一次）> 一般 =====
-    // n＝這張工單是第幾張（1~49）
+    // n＝這張工單是第幾張（1~70）
     function pickKind(n) {
       const up = state.cults.find(c => c.unrest >= 100 && !c.pending);
       if (up) return { kind: 'cult', cult: up };
@@ -6752,7 +6752,7 @@
       state.events = evs;
       // 死對頭：第 2~7 天每天出手一次
       state.rivalTurns = [];
-      for (let d = 2; d <= TOTAL_DAYS; d++) state.rivalTurns.push((d - 1) * TURNS_PER_DAY + 2 + Math.floor(Math.random() * 6));
+      for (let d = 2; d <= TOTAL_DAYS; d++) state.rivalTurns.push((d - 1) * TURNS_PER_DAY + 2 + Math.floor(Math.random() * 8));
       storyReset(); try { tpReset(); } catch (e) { }
       applyMetaStart();
 
@@ -6904,7 +6904,7 @@
       lb.style.borderColor = near ? '#ef4444' : '#3f3f46';
       $('stat-' + (lim.stat === 'faith' ? 'faith' : 'chaos')).style.color = near ? '#f87171' : (lim.stat === 'faith' ? '#fbbf24' : '#c084fc');
       const d = dayNo();
-      $('st-day').innerText = '📅 第 ' + d + ' 天・第 ' + turnInDay() + '/7 回合（總 ' + Math.min(TOTAL_TURNS, state.turn + 1) + '/' + TOTAL_TURNS + '）';
+      $('st-day').innerText = '📅 第 ' + d + ' 天・第 ' + turnInDay() + '/' + TURNS_PER_DAY + ' 回合（總 ' + Math.min(TOTAL_TURNS, state.turn + 1) + '/' + TOTAL_TURNS + '）';
       const kd = $('st-karma');
       kd.innerText = '⛓️ 因果債 ' + state.karmaDebt + '/100';
       kd.style.color = state.karmaDebt >= 70 ? '#f87171' : '#a1a1aa';
@@ -7404,13 +7404,18 @@
           return true;
         }
       }
+      // 提前達標要等到第 5 天以後才算；之前衝到滿格只會停在 99，讓劇情至少走完一半
+      if (state.turn < EARLY_MIN) {
+        const wk0 = state.camp === 'GOD' ? 'faith' : 'chaos';
+        if (state.stats[wk0] >= 100) state.stats[wk0] = 99;
+      }
       updateHeaderUI();
       if (state.camp === 'GOD' && state.stats.faith >= 100) {
-        triggerEnding('🏆', '神界年度最佳主管（提前達標）', '你在任期結束前就把信仰衝到 100 滿格，榮獲天庭董事會嘉獎！', 'win');
+        triggerEnding('🏆', '神界年度最佳主管（提前達標）', '你在任期結束前就把信仰衝到 100 滿格，榮獲天庭董事會嘉獎！\n\n【後續：結算塔】董事會替你辦了慶功宴，宴會廳在塔的頂樓。你看見桌上擺著一份沒有署名的合約。', 'win');
         return true;
       }
       if (state.camp === 'DEMON' && state.stats.chaos >= 100) {
-        triggerEnding('🔥', '混沌大毀壞勝利（提前達標）', '世界提前徹底失控崩壞，你成為地獄最偉大的毀滅英雄！', 'win');
+        triggerEnding('🔥', '混沌大毀壞勝利（提前達標）', '世界提前徹底失控崩壞，你成為地獄最偉大的毀滅英雄！\n\n【後續：結算塔】你在廢墟中撿到一枚紅線打結的識別證。往上看，那座塔還立著。', 'win');
         return true;
       }
       return false;
